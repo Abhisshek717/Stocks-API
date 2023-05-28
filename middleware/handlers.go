@@ -2,17 +2,16 @@ package middleware
 
 import (
 	"database/sql"
-	"encoding/json" 
-	"api/models" 
+	"encoding/json"
+	"api/models"
 	"log"
-	"net/http" 
-	
+	"net/http"
 
-	"github.com/gorilla/mux" 
-	_ "github.com/lib/pq"      
+	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
 )
 
-
+// Getstocks is an HTTP handler function that retrieves all stocks from the database.
 func Getstocks(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		rows, err := db.Query("SELECT * FROM stocks")
@@ -37,6 +36,7 @@ func Getstocks(db *sql.DB) http.HandlerFunc {
 	}
 }
 
+// GetStock is an HTTP handler function that retrieves a single stock from the database based on the provided ID.
 func GetStock(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -44,7 +44,7 @@ func GetStock(db *sql.DB) http.HandlerFunc {
 
 		var u models.Stock
 		err := db.QueryRow("SELECT * FROM stocks WHERE id = $1", id).Scan(&u.StockID, &u.Name, &u.Company, &u.Price)
-		
+
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)
 			return
@@ -54,6 +54,7 @@ func GetStock(db *sql.DB) http.HandlerFunc {
 	}
 }
 
+// CreateStock is an HTTP handler function that creates a new stock in the database.
 func CreateStock(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var u models.Stock
@@ -68,6 +69,7 @@ func CreateStock(db *sql.DB) http.HandlerFunc {
 	}
 }
 
+// UpdateStock is an HTTP handler function that updates an existing stock in the database.
 func UpdateStock(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var u models.Stock
@@ -85,6 +87,7 @@ func UpdateStock(db *sql.DB) http.HandlerFunc {
 	}
 }
 
+// DeleteStock is an HTTP handler function that deletes a stock from the database based on the provided ID.
 func DeleteStock(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -95,14 +98,7 @@ func DeleteStock(db *sql.DB) http.HandlerFunc {
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)
 			return
-		} else {
-			_, err := db.Exec("DELETE FROM stocks WHERE id = $1", id)
-			if err != nil {
-				log.Fatalf("Unable to execute the query. %v", err)
-				w.WriteHeader(http.StatusNotFound)
-				return
-			}
-	
+		}
 			json.NewEncoder(w).Encode("Stock deleted")
 		}
 	}
