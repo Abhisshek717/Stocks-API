@@ -99,6 +99,13 @@ func DeleteStock(db *sql.DB) http.HandlerFunc {
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}
+		else {
+			_, err := db.Exec("DELETE FROM stocks WHERE id = $1", id)
+			if err != nil {
+				log.Fatalf("Unable to execute the query. %v", err)
+				w.WriteHeader(http.StatusNotFound)
+				return
+			}
 			json.NewEncoder(w).Encode("Stock deleted")
 		}
 	}
