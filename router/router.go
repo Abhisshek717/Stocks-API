@@ -1,3 +1,15 @@
+package router
+
+import(
+
+	"log"
+	"os"
+	"database/sql"
+	"api/middleware"
+	"github.com/gorilla/mux"
+)
+
+func Router() *mux.Router {
 // Create a new router.
 router := mux.NewRouter()
 
